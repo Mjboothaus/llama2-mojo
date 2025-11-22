@@ -1,11 +1,13 @@
-/// Config module
-///
-/// Defines the model configuration structure and methods to parse
-/// config parameters from checkpoint files for transformer models.
+""" 
+Config module
 
+Defines the model configuration structure and methods to parse
+config parameters from checkpoint files for transformer models.
+"""
 
 alias element_type = DType.float32
 alias NUM_CONFIG_INT = 7
+
 
 struct Config:
     var dim: Int
@@ -39,7 +41,7 @@ struct Config:
         self.shared_weights = self.vocab_size > 0
         if not self.shared_weights:
             self.vocab_size = -self.vocab_size
-        
+
         if print_config:
             print("config: dim, hidden_dim", self.dim, self.hidden_dim)
             print("config: n_layers, n_heads", self.n_layers, self.n_heads)

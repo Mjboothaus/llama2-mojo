@@ -1,13 +1,15 @@
-/// Matrix module
-///
-/// Provides a multi-dimensional Matrix struct with dynamic shape,
-/// ownership management of underlying buffer, and common indexing,
-/// slicing, and utility operations optimized for high-performance
-/// numerical computations in Mojo.
+""" 
+Matrix module
 
+Provides a multi-dimensional Matrix struct with dynamic shape,
+ownership management of underlying buffer, and common indexing,
+slicing, and utility operations optimized for high-performance
+numerical computations in Mojo.
+"""
 
 alias element_type = DType.float32
 alias BufferPtrFloat32 = UnsafePointer[element_type, MutOrigin.external]
+
 
 struct Matrix(Movable):
     var data: BufferPtrFloat32
@@ -85,18 +87,18 @@ struct Matrix(Movable):
     @always_inline
     fn cols(self) -> Int:
         if len(self.dims) > 0:
-            return self.dims[len(self.dims) -1]
+            return self.dims[len(self.dims) - 1]
         return 1
 
     @always_inline
     fn slice(self, idx: Int) -> BufferPtrFloat32:
         if len(self.dims) > 2:
-             var stride = self.rows() * self.cols()
-             return self.data.offset(idx * stride)
+            var stride = self.rows() * self.cols()
+            return self.data.offset(idx * stride)
         elif len(self.dims) > 1:
-             return self.data.offset(idx * self.cols())
+            return self.data.offset(idx * self.cols())
         else:
-             return self.data.offset(idx)
+            return self.data.offset(idx)
 
     @always_inline
     fn slice(self, idx1: Int, idx2: Int) -> BufferPtrFloat32:
@@ -114,6 +116,6 @@ struct Matrix(Movable):
         if idx < len(self.dims):
             return self.dims[idx]
         return 0
-        
+
     fn num_elements(self) -> Int:
         return self.size()
