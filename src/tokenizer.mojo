@@ -1,13 +1,15 @@
-/// Tokenizer module
-///
-/// Implements a simple vocabulary tokenizer supporting binary
-/// vocab formats, token lookup, and token merging. Designed for
-/// fast loading and tokenization of model inputs.
+""" 
+Tokenizer module
 
+Implements a simple vocabulary tokenizer supporting binary
+vocab formats, token lookup, and token merging. Designed for
+fast loading and tokenization of model inputs.
+"""
 
-from utils import wrap, string_from_bytes
+from src.utils import wrap, string_from_bytes, str_concat
 
-alias element_type = DType.float32
+alias element_type = Float32
+
 
 struct Tokenizer:
     var vocab: List[String]
@@ -43,7 +45,7 @@ struct Tokenizer:
                 self.vocab_scores.append(score)
                 self.map_vocab_to_index[self.vocab[i]] = i
 
-    fn find(self, token_o: String) -> Int:
+    fn find(self, token_o: String) raises -> Int:
         var token = wrap(token_o)
         var index = self.map_vocab_to_index.find(token)
         return index.or_else(-1)
@@ -53,3 +55,37 @@ struct Tokenizer:
         print("First", count, "tokens:")
         for i in range(count):
             print(i, ":", self.vocab[i])
+
+
+fn bpe_encode(mut tokens: List[Int], text: String, tok: Tokenizer) raises:
+    for pos in range(len(text)):
+        var char = String(text[pos])
+        var id = tok.find(char)
+        if id == -1:
+            print("Not a good prompt token at pos ", pos)
+            return
+        tokens.append(id)
+
+    while True:
+        var best_score = Float32(-1e10)
+        var best_id = -1
+        var best_idx = -1
+
+        for i in range(len(tokens) - 1):
+            var str = str_concat(tok.vocab[tokens[i]], tok.vocab[tokens[i + 1]])
+            var id = tok.find(str)
+            if id != -1 and tok.vocab_scores[id] > best_score:
+                best_score = tok.vocab_scores[id]
+                best_id = id
+                best_idx = i
+
+        if best_idx == -1:
+            break
+
+        tokens[best_idx] = best_id
+        var _tokens = List[Int]()
+        for i in range(0, best_idx + 1):
+            _tokens.append(tokens[i])
+        for i in range(best_idx + 2, len(tokens)):
+            _tokens.append(tokens[i])
+        tokens = _tokens^

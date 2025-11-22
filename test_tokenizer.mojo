@@ -1,4 +1,4 @@
-from testing import assert_true, assert_equal, TestSuite
+from testing import assert_true, assert_equal
 from src.tokenizer import Tokenizer
 
 
@@ -91,4 +91,12 @@ fn test_tokenizer_find() raises:
 
 
 fn main() raises:
-    TestSuite.discover_tests[__functions_in_module()]().run()
+    print("=" * 60)
+    print("Testing Tokenizer")
+    print("=" * 60)
+    print()
+
+    test_tokenizer()
+    test_tokenizer_find()
+
+    print("\nAll tokenizer tests passed! ✓")
