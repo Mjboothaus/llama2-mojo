@@ -5,6 +5,8 @@ Defines the model configuration structure and methods to parse
 config parameters from checkpoint files for transformer models.
 """
 
+from sys.info import size_of
+
 alias element_type = DType.float32
 alias NUM_CONFIG_INT = 7
 
@@ -24,7 +26,7 @@ struct Config:
 
     fn __init__(out self, filename: String, print_config: Bool) raises:
         var f = open(filename, "r")
-        var bytes_of_config_params = NUM_CONFIG_INT * size_of[DType.int32]()
+        var bytes_of_config_params = NUM_CONFIG_INT * size_of[Int32]()
         var config_data_raw = f.read_bytes(bytes_of_config_params)
         f.close()
         var int32_ptr = config_data_raw.steal_data().bitcast[Int32]()

@@ -1,3 +1,8 @@
+# Extras 
+
+
+testdata/
+
 # Model checkpoint files
 stories*.bin
 

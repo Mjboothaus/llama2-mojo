@@ -13,10 +13,11 @@ from utils import StaticTuple
 from algorithm import vectorize, parallelize
 
 alias element_type = Float32
-alias n_element = (4 * simd_width_of[element_type]())
+alias n_element = 4 * simd_width_of[element_type]()
 alias BufferPtrFloat32 = UnsafePointer[element_type]
 
 
+# RMS normalization kernel
 @always_inline
 fn rmsnorm(
     mut o: BufferPtrFloat32,
@@ -49,6 +50,7 @@ fn rmsnorm(
     vectorize[_norm, n_element](size)
 
 
+# Softmax kernels
 @always_inline
 fn softmax(mut x: BufferPtrFloat32, size: Int):
     softmax(x, 0, size)
@@ -89,6 +91,7 @@ fn softmax(mut x: BufferPtrFloat32, start: Int, end: Int):
     vectorize[_norm, n_element](end - start)
 
 
+# Batch matrix multiplication kernel
 @always_inline
 fn batch_matmul[
     n: Int
@@ -134,6 +137,7 @@ fn batch_matmul[
     parallelize[compute_row](rows, workers)
 
 
+# Matrix multiplication wrapper
 @always_inline
 fn matmul(
     C: BufferPtrFloat32,
@@ -153,6 +157,7 @@ fn matmul(
     )
 
 
+# Add two buffers element-wise
 @always_inline
 fn add(
     dest: BufferPtrFloat32,
